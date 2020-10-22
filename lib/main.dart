@@ -1,8 +1,8 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:csv/csv.dart';
-import 'package:flutter/services.dart' show rootBundle;
+import 'package:http/http.dart' as http;
+import 'dart:convert' as convert;
 
 void main() {
   runApp(MyApp());
@@ -34,13 +34,24 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+
+var lista = ['Lunes','Martes','Miercoles','Jueves','Viernes'];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: FutureBuilder(
+      body:
+      Column(
+        children:listContainer(),
+        
+        ),
+        
+
+      /*
+      FutureBuilder(
         future: _loadCsvData(),
         builder: (_, AsyncSnapshot<List<dynamic>> snapshot) {
           if (snapshot.hasData) {
@@ -72,8 +83,78 @@ class _MyHomePageState extends State<MyHomePage> {
             child: Text('no data found !!!'),
           );
         },
-      ),
+      ),*/
     );
+  }
+
+  List<Widget> listContainer() {
+    return <Widget>[
+      Row(
+        children:<Widget>[
+        for(var i=0;i<5;i++)...{
+          new Container(
+          width: 70,
+          height:70,
+          decoration: BoxDecoration(
+            color: Colors.amberAccent,
+            borderRadius: BorderRadius.circular(10)
+          ),
+          child:Column(
+            children: [
+              SizedBox(
+                height: 15,
+                ),
+                Text(lista[i]),
+                Expanded(
+                  flex:1,
+                child: Container(
+                  height: 0,
+                  width: 0,)
+                  ),
+            SizedBox(height: 10,)
+          ],
+          )
+      ),
+        }
+        ]
+      ),
+      FutureBuilder(
+        future: _loadCsvData(),
+        builder: (_, AsyncSnapshot<List<dynamic>> snapshot) {
+          if (snapshot.hasData) {
+            return Column(
+
+                children: snapshot.data
+                    .map(
+                      (row) => //Container(
+                    //width: 50,
+                    //height:60,
+                    //decoration: BoxDecoration(
+                    //color: Colors.amberAccent,
+                    //borderRadius: BorderRadius.circular(10)
+                    //),
+                    new Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 20),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            Text(row['h']),
+                          ],
+                      ),
+                    )
+                    //)
+                      
+                    
+                      ).toList()
+            );
+          }
+
+          return Center(
+            child: Text('no data found !!!'),
+          );
+        })
+      ];
   }
 
 /*
@@ -97,7 +178,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }*/
 
   Widget crearTabla() {
-    final File file = new File('C:/Users/enetz/Desktop/Calendario.xlsx');
+    final File file = new File('./csv/Calendario.csv');
     //Stream<List> inputStream = file.openRead();
     //String content = file.readAsStringSync();
 
@@ -166,8 +247,22 @@ class _MyHomePageState extends State<MyHomePage> {
     etc
   ]
   */
-  Future<List<List<dynamic>>> _loadCsvData() async {
-    final file = new File('./csv/Calendario.csv');
+
+  
+Future<List<dynamic>> _loadCsvData() async {
+
+
+final response = await http.get('https://api.sheety.co/2c5b1406a73797b34bafc46e169b285c/calendario/hoja1');
+
+
+
+if(response.statusCode == 200){
+  var jsonResponse = convert.jsonDecode(response.body);
+  return jsonResponse['hoja1'];
+}
+print('llego aqui');
+return null;
+    /*final file = new File('./csv/Calendario.csv');
     Stream<List> inputStream = file.openRead();
     inputStream
         .transform(utf8.decoder) // Decode bytes to UTF-8.
@@ -195,5 +290,8 @@ class _MyHomePageState extends State<MyHomePage> {
         .transform(utf8.decoder)
         .transform(new CsvToListConverter())
         .toList();
+
+  */
   }
+
 }
