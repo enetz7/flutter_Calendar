@@ -1,7 +1,8 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
+
+import 'page/modal.dart';
 
 void main() {
   runApp(MyApp());
@@ -33,8 +34,13 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  var lista = ['', 'L', 'M', 'X', 'J', 'V'];
+  var lista = ['L', 'M', 'X', 'J', 'V'];
 
+Color pickerColor = Color(0xff443a49);
+Color currentColor = Color(0xff443a49);
+ void changeColor(Color color) {
+  setState(() => pickerColor = color);
+}
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,12 +58,23 @@ class _MyHomePageState extends State<MyHomePage> {
     return <Widget>[
       Row(
         children: <Widget>[
+          Container(
+             padding: 
+                  const EdgeInsets.symmetric(vertical: 21.5,horizontal: 10),
+            child: Text(""),
+            decoration: BoxDecoration(
+                    color: Colors.lightBlue,
+                    border:Border.all(color:Colors.lightBlue)
+            ),
+          ),
           for (var i = 0; i < lista.length; i++) ...{
             Expanded(
               child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 20),
+                  padding: 
+                  const EdgeInsets.symmetric(vertical: 20,horizontal: 20),
                   decoration: BoxDecoration(
                     color: Colors.lightBlue,
+                     border:Border.all(color:Colors.lightBlue)
                   ),
                   child: Column(
                     children: [
@@ -115,64 +132,48 @@ class _MyHomePageState extends State<MyHomePage> {
 
   List<Widget> listaRow(row) {
     return <Widget>[
-      Text(row['H']),
-      for (var i = 0; i < 5; i++) ...{
-        Expanded(
-            child: InkWell(
-          child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 30),
-              decoration: BoxDecoration(
-                  color: Colors.deepOrangeAccent,
-                  border: Border.all(color: Colors.white)),
-              child: Column(
-                children: [],
-              )),
-          onTap: () {
-            Navigator.of(context).push(
-              PageRouteBuilder(
-                opaque: false,
-                pageBuilder: (BuildContext context, _, __) {
-                  return CreateModal();
-                },
-              ),
-            );
-          },
-        ))
+      Row(children:[Text(row['H'])]),
+      if(row['H']!="14:50")...{
+        for (var i = 0; i < 5; i++) ...{
+          Expanded(
+              child: InkWell(
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 40),
+                decoration: BoxDecoration(
+                    color: Colors.deepOrangeAccent,
+                    border: Border.all(color: Colors.white)),
+                child: Column(
+                  children: [],
+                )),
+            onTap: () {
+              Navigator.of(context).push(
+                PageRouteBuilder(
+                  opaque: true,
+                  pageBuilder: (BuildContext context, _, __) {
+                    return Modal();
+                  },
+                ),
+              );
+              //showDialog(context:context,
+              //  child:AlertDialog(content:Modal(),
+              //  )
+              //);    
+            },
+          ))
+        }
       }
     ];
+      
   }
 
+
+
   Future<List<dynamic>> _loadCsvData() async {
-    final response = await http.get('https://api.apispreadsheets.com/data/2351/'
-        //'https://api.sheety.co/2c5b1406a73797b34bafc46e169b285c/calendario/hoja1'
-        );
+    final response = await http.get('https://api.apispreadsheets.com/data/2351/');
     if (response.statusCode == 200) {
       var jsonResponse = convert.jsonDecode(response.body);
       return jsonResponse['data'];
     }
     return null;
-  }
-}
-
-class CreateModal extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        backgroundColor: Colors.transparent,
-        appBar: AppBar(
-          title: Text("Introducir clase"),
-        ),
-        body: Center(
-          child: Container(
-            height: 500,
-            width: 500,
-            child: RaisedButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: Text('Introduce la clase'),
-            ),
-          ),
-        ));
   }
 }
