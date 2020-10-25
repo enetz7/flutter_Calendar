@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 
+import 'class/contenedor.dart';
 import 'page/modal.dart';
 
 void main() {
@@ -34,113 +35,140 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  var lista = ['L', 'M', 'X', 'J', 'V'];
+  var lista = ['', 'L', 'M', 'X', 'J', 'V'];
+  var listadatos;
+  var _listaContenedores = <Contenedor>[];
 
-Color pickerColor = Color(0xff443a49);
-Color currentColor = Color(0xff443a49);
- void changeColor(Color color) {
-  setState(() => pickerColor = color);
-}
+  Color pickerColor = Color(0xff443a49);
+  Color currentColor = Color(0xff443a49);
+
+  void changeColor(Color color) {
+    setState(() => pickerColor = color);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    changeList();
+  }
+
+  void changeList() async {
+    listadatos = await _loadCsvData();
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text(widget.title),
-        ),
-        body: SingleChildScrollView(
-          child: Column(
-            children: listContainer(),
-          ),
-        ));
+      appBar: AppBar(
+        title: Text(widget.title),
+      ),
+      body: SingleChildScrollView(
+        child: Column(children: listContainer()),
+      ),
+    );
   }
 
   List<Widget> listContainer() {
     return <Widget>[
-      Row(
-        children: <Widget>[
-          Container(
-             padding: 
-                  const EdgeInsets.symmetric(vertical: 21.5,horizontal: 10),
-            child: Text(""),
-            decoration: BoxDecoration(
-                    color: Colors.lightBlue,
-                    border:Border.all(color:Colors.lightBlue)
-            ),
-          ),
-          for (var i = 0; i < lista.length; i++) ...{
-            Expanded(
-              child: Container(
-                  padding: 
-                  const EdgeInsets.symmetric(vertical: 20,horizontal: 20),
-                  decoration: BoxDecoration(
-                    color: Colors.lightBlue,
-                     border:Border.all(color:Colors.lightBlue)
-                  ),
-                  child: Column(
-                    children: [
-                      Text(
-                        lista[i],
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16),
-                      ),
-                    ],
-                  )),
+      if (listadatos != null) ...{
+        Row(
+          children: <Widget>[
+            for (var i = 0; i < lista.length; i++) ...{
+              Expanded(
+                child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 20, horizontal: 20),
+                    decoration: BoxDecoration(
+                        color: Colors.lightBlue,
+                        border: Border.all(color: Colors.lightBlue)),
+                    child: Column(
+                      children: [
+                        Text(
+                          lista[i],
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16),
+                        ),
+                      ],
+                    )),
+              )
+            }
+          ],
+        ),
+        Container(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
+            child: GridView.count(
+              padding: const EdgeInsets.all(1),
+              crossAxisSpacing: 1,
+              mainAxisSpacing: 1,
+              crossAxisCount: 6,
+              children: listaRow(),
             )
-          }
-        ],
-      ),
-      Center(
-        child: FutureBuilder(
-            future: _loadCsvData(),
-            builder: (_, AsyncSnapshot<List<dynamic>> snapshot) {
-              if (snapshot.hasData) {
-                return Column(
-                    children: snapshot.data
-                        .map((row) => new Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 1),
-                              child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: listaRow(row)
-                                  //Text(row['H']),
+            // Center(
+            //   child: FutureBuilder(
+            //       future: _loadCsvData(),
+            //       builder: (_, AsyncSnapshot<List<dynamic>> snapshot) {
+            //         if (snapshot.hasData) {
+            //           return Column(
+            //               children: snapshot.data
+            //                   .map((row) => new Padding(
+            //                         padding: const EdgeInsets.symmetric(vertical: 1),
+            //                         child: Row(
+            //                             mainAxisAlignment:
+            //                                 MainAxisAlignment.spaceBetween,
+            //                             crossAxisAlignment: CrossAxisAlignment.center,
+            //                             children: listaRow(row)
+            //                             //Text(row['H']),
 
-                                  ),
-                            ))
-                        .toList());
-              }
-              return Align(
-                  alignment: Alignment.bottomCenter,
-                  child: new Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 250),
-                      child: Column(
-                        children: [
-                          new CircularProgressIndicator(),
-                          new Text(
-                            "Loading",
-                            style: TextStyle(fontSize: 20),
-                          ),
-                        ],
-                      )));
-            }),
-      ),
+            //                             ),
+            //                       ))
+            //                   .toList());
+            //         }
+            //         return Align(
+            //             alignment: Alignment.bottomCenter,
+            //             child: new Padding(
+            //                 padding: const EdgeInsets.symmetric(vertical: 250),
+            //                 child: Column(
+            //                   children: [
+            //                     new CircularProgressIndicator(),
+            //                     new Text(
+            //                       "Loading",
+            //                       style: TextStyle(fontSize: 20),
+            //                     ),
+            //                   ],
+            //                 )));
+            //       }),
+            // ),
+            )
+      } else ...{
+        Align(
+            alignment: Alignment.bottomCenter,
+            child: new Padding(
+                padding: const EdgeInsets.symmetric(vertical: 250),
+                child: Column(children: [
+                  new CircularProgressIndicator(),
+                  new Text(
+                    "Loading",
+                    style: TextStyle(fontSize: 20),
+                  ),
+                ]))),
+      }
     ];
   }
 
-  List<Widget> listaRow(row) {
+  List<Widget> listaRow() {
     return <Widget>[
-      Row(children:[Text(row['H'])]),
-      if(row['H']!="14:50")...{
-        for (var i = 0; i < 5; i++) ...{
-          Expanded(
-              child: InkWell(
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 40),
+      for (var i = 0; i < listadatos.length; i++) ...{
+        Row(children: [Text(listadatos[i]['H'])]),
+        for (var x = 0; x < 5; x++) ...{
+          InkWell(
+            child: Container(
                 decoration: BoxDecoration(
-                    color: Colors.deepOrangeAccent,
+                    color: Colors.purple,
                     border: Border.all(color: Colors.white)),
                 child: Column(
                   children: [],
@@ -157,19 +185,17 @@ Color currentColor = Color(0xff443a49);
               //showDialog(context:context,
               //  child:AlertDialog(content:Modal(),
               //  )
-              //);    
+              //);
             },
-          ))
+          )
         }
       }
     ];
-      
   }
 
-
-
   Future<List<dynamic>> _loadCsvData() async {
-    final response = await http.get('https://api.apispreadsheets.com/data/2351/');
+    final response =
+        await http.get('https://api.apispreadsheets.com/data/2351/');
     if (response.statusCode == 200) {
       var jsonResponse = convert.jsonDecode(response.body);
       return jsonResponse['data'];
