@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 
-import 'class/contenedor.dart';
+import 'model/contenedor.dart';
 import 'page/modal.dart';
 
 void main() {
@@ -37,7 +37,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   var lista = ['', 'L', 'M', 'X', 'J', 'V'];
   var listadatos;
-  var _listaContenedores = <Contenedor>[];
+  List _listaContenedores;
 
   Color pickerColor = Color(0xff443a49);
   Color currentColor = Color(0xff443a49);
@@ -54,6 +54,15 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void changeList() async {
     listadatos = await _loadCsvData();
+    setState(() {});
+  }
+
+  void addContainerRow() async{
+    _listaContenedores.add(<Contenedor>[]);
+    setState(() {});
+  }
+  void addContainer(int i) async{
+    _listaContenedores[i].add(Contenedor(Colors.white,""));
     setState(() {});
   }
 
@@ -164,8 +173,10 @@ class _MyHomePageState extends State<MyHomePage> {
     return <Widget>[
       for (var i = 0; i < listadatos.length; i++) ...{
         Row(children: [Text(listadatos[i]['H'])]),
+    
         for (var x = 0; x < 5; x++) ...{
           InkWell(
+            
             child: Container(
                 decoration: BoxDecoration(
                     color: Colors.purple,
