@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:calendar/model/contenedor.dart';
 
 class Modal extends StatefulWidget {
-  Modal({Key key}) : super(key: key);
+  Modal({Key key, this.contenedor}) : super(key: key);
+
+  Contenedor contenedor;
 
   @override
   _Modal createState() => _Modal();
@@ -11,6 +14,12 @@ class Modal extends StatefulWidget {
 class _Modal extends State<Modal> {
   void changeColor(Color color) {
     setState(() => pickerColor = color);
+  }
+
+  void changeText(String value) {
+    setState(() {
+      widget.contenedor.note = value;
+    });
   }
 
   Color pickerColor = Color(0xff443a49);
@@ -34,7 +43,9 @@ class _Modal extends State<Modal> {
                     style: TextStyle(
                       fontSize: 20,
                     ))),
-            TextField(),
+            TextField(
+              onChanged: (value) => changeText(value),
+            ),
             Row(children: [
               Text(
                 "Selecciona el color del container   ",
@@ -62,6 +73,9 @@ class _Modal extends State<Modal> {
                             child: const Text('Listo'),
                             onPressed: () {
                               setState(() => currentColor = pickerColor);
+                              setState(() {
+                                widget.contenedor.containerColor = pickerColor;
+                              });
                               Navigator.of(context).pop();
                             },
                           ),

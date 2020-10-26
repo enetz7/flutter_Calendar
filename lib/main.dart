@@ -37,7 +37,9 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   var lista = ['', 'L', 'M', 'X', 'J', 'V'];
   var listadatos;
-  List _listaContenedores;
+  var contenedores = <Contenedor>[];
+
+  List _listaContenedores = [];
 
   Color pickerColor = Color(0xff443a49);
   Color currentColor = Color(0xff443a49);
@@ -52,17 +54,33 @@ class _MyHomePageState extends State<MyHomePage> {
     changeList();
   }
 
+  void addContainers(int index) async {
+    if (listadatos != null) {
+      for (int i = 0; i < index; i++) {
+        contenedores = <Contenedor>[];
+        for (int x = 0; x < 5; x++) {
+          addContainer(i);
+        }
+        addContainerRow();
+      }
+      setState(() {});
+    }
+  }
+
   void changeList() async {
-    listadatos = await _loadCsvData();
+    List respuesta = await _loadCsvData();
+    listadatos = respuesta;
+    addContainers(respuesta.length);
     setState(() {});
   }
 
-  void addContainerRow() async{
-    _listaContenedores.add(<Contenedor>[]);
+  void addContainerRow() {
+    _listaContenedores.add(contenedores);
     setState(() {});
   }
-  void addContainer(int i) async{
-    _listaContenedores[i].add(Contenedor(Colors.white,""));
+
+  void addContainer(int i) {
+    contenedores.add(Contenedor(Colors.white, ""));
     setState(() {});
   }
 
@@ -80,7 +98,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   List<Widget> listContainer() {
     return <Widget>[
-      if (listadatos != null) ...{
+      if (listadatos != null && _listaContenedores != null) ...{
         Row(
           children: <Widget>[
             for (var i = 0; i < lista.length; i++) ...{
@@ -116,43 +134,7 @@ class _MyHomePageState extends State<MyHomePage> {
               mainAxisSpacing: 1,
               crossAxisCount: 6,
               children: listaRow(),
-            )
-            // Center(
-            //   child: FutureBuilder(
-            //       future: _loadCsvData(),
-            //       builder: (_, AsyncSnapshot<List<dynamic>> snapshot) {
-            //         if (snapshot.hasData) {
-            //           return Column(
-            //               children: snapshot.data
-            //                   .map((row) => new Padding(
-            //                         padding: const EdgeInsets.symmetric(vertical: 1),
-            //                         child: Row(
-            //                             mainAxisAlignment:
-            //                                 MainAxisAlignment.spaceBetween,
-            //                             crossAxisAlignment: CrossAxisAlignment.center,
-            //                             children: listaRow(row)
-            //                             //Text(row['H']),
-
-            //                             ),
-            //                       ))
-            //                   .toList());
-            //         }
-            //         return Align(
-            //             alignment: Alignment.bottomCenter,
-            //             child: new Padding(
-            //                 padding: const EdgeInsets.symmetric(vertical: 250),
-            //                 child: Column(
-            //                   children: [
-            //                     new CircularProgressIndicator(),
-            //                     new Text(
-            //                       "Loading",
-            //                       style: TextStyle(fontSize: 20),
-            //                     ),
-            //                   ],
-            //                 )));
-            //       }),
-            // ),
-            )
+            ))
       } else ...{
         Align(
             alignment: Alignment.bottomCenter,
@@ -173,30 +155,22 @@ class _MyHomePageState extends State<MyHomePage> {
     return <Widget>[
       for (var i = 0; i < listadatos.length; i++) ...{
         Row(children: [Text(listadatos[i]['H'])]),
-    
         for (var x = 0; x < 5; x++) ...{
           InkWell(
-            
             child: Container(
                 decoration: BoxDecoration(
-                    color: Colors.purple,
-                    border: Border.all(color: Colors.white)),
-                child: Column(
-                  children: [],
-                )),
+                    color: _listaContenedores[i][x].containerColor,
+                    border: Border.all(color: Colors.black)),
+                child: Text(_listaContenedores[i][x].note)),
             onTap: () {
               Navigator.of(context).push(
                 PageRouteBuilder(
                   opaque: true,
                   pageBuilder: (BuildContext context, _, __) {
-                    return Modal();
+                    return Modal(contenedor: _listaContenedores[i][x]);
                   },
                 ),
               );
-              //showDialog(context:context,
-              //  child:AlertDialog(content:Modal(),
-              //  )
-              //);
             },
           )
         }
