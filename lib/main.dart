@@ -52,6 +52,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     changeList();
+    print(listadatos);
   }
 
   void addContainers(int index) async {
@@ -59,7 +60,7 @@ class _MyHomePageState extends State<MyHomePage> {
       for (int i = 0; i < index; i++) {
         contenedores = <Contenedor>[];
         for (int x = 0; x < 5; x++) {
-          addContainer(i);
+          addContainer(i, x);
         }
         addContainerRow();
       }
@@ -70,7 +71,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void changeList() async {
     List respuesta = await _loadCsvData();
     listadatos = respuesta;
-    addContainers(respuesta.length);
+    addContainers(respuesta.length - 1);
     setState(() {});
   }
 
@@ -79,8 +80,16 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {});
   }
 
-  void addContainer(int i) {
-    contenedores.add(Contenedor(Colors.white, ""));
+  void addContainer(int i, int x) {
+    if (listadatos[i][lista[x + 1]] != "") {
+      var datos = listadatos[i][lista[x + 1]].split("|");
+      String color = datos[1];
+      color = color.replaceAll("Color(", "");
+      Color c = Color(int.parse(color.replaceAll(")", "")));
+      contenedores.add(Contenedor(c, datos[0]));
+    } else {
+      contenedores.add(Contenedor(Colors.white, ""));
+    }
     setState(() {});
   }
 
@@ -129,9 +138,9 @@ class _MyHomePageState extends State<MyHomePage> {
             width: MediaQuery.of(context).size.width,
             height: MediaQuery.of(context).size.height,
             child: GridView.count(
-              padding: const EdgeInsets.all(1),
-              crossAxisSpacing: 1,
-              mainAxisSpacing: 1,
+              padding: const EdgeInsets.all(0),
+              crossAxisSpacing: 0,
+              mainAxisSpacing: 0,
               crossAxisCount: 6,
               children: listaRow(),
             ))
@@ -154,25 +163,34 @@ class _MyHomePageState extends State<MyHomePage> {
   List<Widget> listaRow() {
     return <Widget>[
       for (var i = 0; i < listadatos.length; i++) ...{
-        Row(children: [Text(listadatos[i]['H'])]),
-        for (var x = 0; x < 5; x++) ...{
-          InkWell(
-            child: Container(
-                decoration: BoxDecoration(
-                    color: _listaContenedores[i][x].containerColor,
-                    border: Border.all(color: Colors.black)),
-                child: Text(_listaContenedores[i][x].note)),
-            onTap: () {
-              Navigator.of(context).push(
-                PageRouteBuilder(
-                  opaque: true,
-                  pageBuilder: (BuildContext context, _, __) {
-                    return Modal(contenedor: _listaContenedores[i][x]);
-                  },
-                ),
-              );
-            },
-          )
+        Row(children: [
+          Align(alignment: Alignment.topLeft, child: Text(listadatos[i]['H']))
+        ]),
+        if (i != listadatos.length - 1) ...{
+          for (var x = 0; x < 5; x++) ...{
+            InkWell(
+              child: Container(
+                  decoration: BoxDecoration(
+                      color: _listaContenedores[i][x].containerColor,
+                      border: Border(
+                          left: BorderSide(color: Colors.black),
+                          right: BorderSide(color: Colors.black))),
+                  alignment: Alignment.center,
+                  child: Text(
+                    _listaContenedores[i][x].note,
+                  )),
+              onTap: () {
+                Navigator.of(context).push(
+                  PageRouteBuilder(
+                    opaque: true,
+                    pageBuilder: (BuildContext context, _, __) {
+                      return Modal(contenedor: _listaContenedores[i][x]);
+                    },
+                  ),
+                );
+              },
+            )
+          }
         }
       }
     ];
