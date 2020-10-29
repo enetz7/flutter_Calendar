@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'model/contenedor.dart';
 import 'page/modal.dart';
 import 'api/apiConection.dart';
+
 void main() {
   runApp(MyApp());
 }
@@ -32,19 +33,16 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  var lista = ['', 'L', 'M', 'X', 'J', 'V'];
-  var listadatos;
-  var contenedores = <Contenedor>[];
-
-  List _listaContenedores = [];
-
   Color pickerColor = Color(0xff443a49);
   Color currentColor = Color(0xff443a49);
+  var lista = ['', 'L', 'M', 'X', 'J', 'V'];
+  var listadatos;
+  List _listaContenedores = [];
+  var contenedores = <Contenedor>[];
 
-
-  List dataList(int i,String day,String texto){
+  List dataList(int i, String day, String texto) {
     setState(() {
-      listadatos[i][day]=texto;
+      listadatos[i][day] = texto;
     });
     return listadatos;
   }
@@ -57,6 +55,13 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     changeList();
+  }
+
+  void changeList() async {
+    List respuesta = await ApiConection().loadCsvData();
+    listadatos = respuesta;
+    addContainers(respuesta.length - 1);
+    setState(() {});
   }
 
   void addContainers(int index) async {
@@ -72,20 +77,6 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-
-
-  void changeList() async {
-    List respuesta = await ApiConection().loadCsvData();
-    listadatos = respuesta;
-    addContainers(respuesta.length - 1);
-    setState(() {});
-  }
-
-  void addContainerRow() {
-    _listaContenedores.add(contenedores);
-    setState(() {});
-  }
-
   void addContainer(int i, int x) {
     if (listadatos[i][lista[x + 1]] != "") {
       var datos = listadatos[i][lista[x + 1]].split("|");
@@ -96,6 +87,11 @@ class _MyHomePageState extends State<MyHomePage> {
     } else {
       contenedores.add(Contenedor(Colors.white, ""));
     }
+    setState(() {});
+  }
+
+  void addContainerRow() {
+    _listaContenedores.add(contenedores);
     setState(() {});
   }
 
@@ -170,7 +166,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return <Widget>[
       for (var i = 0; i < listadatos.length; i++) ...{
         Row(children: [
-          Align(alignment: Alignment.topLeft, child: Text(listadatos[i]['H']))
+          Align(alignment: Alignment.topCenter, child: Text(listadatos[i]['H']))
         ]),
         if (i != listadatos.length - 1) ...{
           for (var x = 0; x < 5; x++) ...{
@@ -178,8 +174,7 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Container(
                   decoration: BoxDecoration(
                       color: _listaContenedores[i][x].containerColor,
-                      border: Border.all(color: Colors.black
-                          )),
+                      border: Border.all(color: Colors.black)),
                   alignment: Alignment.center,
                   child: Text(
                     _listaContenedores[i][x].note,
@@ -189,7 +184,11 @@ class _MyHomePageState extends State<MyHomePage> {
                   PageRouteBuilder(
                     opaque: true,
                     pageBuilder: (BuildContext context, _, __) {
-                      return Modal(contenedor: _listaContenedores[i][x],index: i,day: lista[x+1],list:listadatos);
+                      return Modal(
+                          contenedor: _listaContenedores[i][x],
+                          index: i,
+                          day: lista[x + 1],
+                          list: listadatos);
                     },
                   ),
                 );
