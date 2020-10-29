@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:calendar/model/contenedor.dart';
-
+import 'package:calendar/api/apiConection.dart';
 class Modal extends StatefulWidget {
-  Modal({Key key, this.contenedor}) : super(key: key);
+  Modal({Key key, this.contenedor,this.index,this.day,this.list}) : super(key: key);
 
   Contenedor contenedor;
+  int index;
+  String day;
+  List list;
 
   @override
   _Modal createState() => _Modal();
@@ -87,6 +90,10 @@ class _Modal extends State<Modal> {
             RaisedButton(
               child: Text("Enviar"),
               onPressed: () {
+                setState(() {
+                  widget.list[widget.index][widget.day]=widget.contenedor.note+"|"+widget.contenedor.containerColor.toString();
+                });
+                ApiConection().createCsv(widget.list);
                 Navigator.of(context).pop();
               },
             )

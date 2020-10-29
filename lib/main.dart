@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert' as convert;
-
 import 'model/contenedor.dart';
 import 'page/modal.dart';
-
+import 'api/apiConection.dart';
 void main() {
   runApp(MyApp());
 }
@@ -44,6 +41,14 @@ class _MyHomePageState extends State<MyHomePage> {
   Color pickerColor = Color(0xff443a49);
   Color currentColor = Color(0xff443a49);
 
+
+  List dataList(int i,String day,String texto){
+    setState(() {
+      listadatos[i][day]=texto;
+    });
+    return listadatos;
+  }
+
   void changeColor(Color color) {
     setState(() => pickerColor = color);
   }
@@ -52,7 +57,6 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     changeList();
-    print(listadatos);
   }
 
   void addContainers(int index) async {
@@ -68,8 +72,10 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+
+
   void changeList() async {
-    List respuesta = await _loadCsvData();
+    List respuesta = await ApiConection().loadCsvData();
     listadatos = respuesta;
     addContainers(respuesta.length - 1);
     setState(() {});
@@ -172,9 +178,8 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Container(
                   decoration: BoxDecoration(
                       color: _listaContenedores[i][x].containerColor,
-                      border: Border(
-                          left: BorderSide(color: Colors.black),
-                          right: BorderSide(color: Colors.black))),
+                      border: Border.all(color: Colors.black
+                          )),
                   alignment: Alignment.center,
                   child: Text(
                     _listaContenedores[i][x].note,
@@ -184,7 +189,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   PageRouteBuilder(
                     opaque: true,
                     pageBuilder: (BuildContext context, _, __) {
-                      return Modal(contenedor: _listaContenedores[i][x]);
+                      return Modal(contenedor: _listaContenedores[i][x],index: i,day: lista[x+1],list:listadatos);
                     },
                   ),
                 );
@@ -194,15 +199,5 @@ class _MyHomePageState extends State<MyHomePage> {
         }
       }
     ];
-  }
-
-  Future<List<dynamic>> _loadCsvData() async {
-    final response =
-        await http.get('https://api.apispreadsheets.com/data/2351/');
-    if (response.statusCode == 200) {
-      var jsonResponse = convert.jsonDecode(response.body);
-      return jsonResponse['data'];
-    }
-    return null;
   }
 }
