@@ -2,11 +2,12 @@ import 'package:flutter/cupertino.dart';
 
 class Contenedor {
   Color containerColor;
-  String note;
-
+  String text;
+  int rowCount;
   // constructor
-  Contenedor(Color containerColor, String note) {
+  Contenedor(Color containerColor, String text, int rowCount) {
     this.containerColor = containerColor;
-    this.note = note;
+    this.text = text;
+    this.rowCount = rowCount;
   }
 }

@@ -38,9 +38,6 @@ class ApiConection extends State<ApiConect> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     throw UnimplementedError();
   }
-  // This widget is the root of your application.
-
 }

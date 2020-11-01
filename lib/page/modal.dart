@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:calendar/model/contenedor.dart';
 import 'package:calendar/api/apiConection.dart';
+
 class Modal extends StatefulWidget {
-  Modal({Key key, this.contenedor,this.index,this.day,this.list}) : super(key: key);
+  Modal({Key key, this.contenedor, this.index, this.day, this.list})
+      : super(key: key);
 
   Contenedor contenedor;
   int index;
@@ -15,13 +17,21 @@ class Modal extends StatefulWidget {
 }
 
 class _Modal extends State<Modal> {
+  String dropdownValue = '1';
+
   void changeColor(Color color) {
     setState(() => pickerColor = color);
   }
 
   void changeText(String value) {
     setState(() {
-      widget.contenedor.note = value;
+      widget.contenedor.text = value;
+    });
+  }
+
+  void changeRowCount(String rowCount) {
+    setState(() {
+      widget.contenedor.rowCount = int.parse(rowCount);
     });
   }
 
@@ -48,6 +58,41 @@ class _Modal extends State<Modal> {
                     ))),
             TextField(
               onChanged: (value) => changeText(value),
+            ),
+            Row(
+              children: [
+                Text("Selecciona el numero de horas",
+                    style: TextStyle(
+                      fontSize: 18,
+                    )),
+                Padding(
+                  padding: EdgeInsets.only(left: 50),
+                  child: DropdownButton<String>(
+                    value: dropdownValue,
+                    icon: Icon(Icons.arrow_downward),
+                    iconSize: 24,
+                    elevation: 16,
+                    style: TextStyle(color: Colors.deepPurple, fontSize: 20),
+                    underline: Container(
+                      height: 2,
+                      color: Colors.deepPurpleAccent,
+                    ),
+                    onChanged: (String newValue) {
+                      setState(() {
+                        dropdownValue = newValue;
+                      });
+                      changeRowCount(newValue);
+                    },
+                    items: <String>['1', '2']
+                        .map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ],
             ),
             Row(children: [
               Text(
@@ -91,7 +136,12 @@ class _Modal extends State<Modal> {
               child: Text("Enviar"),
               onPressed: () {
                 setState(() {
-                  widget.list[widget.index][widget.day]=widget.contenedor.note+"|"+widget.contenedor.containerColor.toString();
+                  widget.list[widget.index][widget.day] =
+                      widget.contenedor.text +
+                          "|" +
+                          widget.contenedor.containerColor.toString() +
+                          "|" +
+                          widget.contenedor.rowCount.toString();
                 });
                 ApiConection().createCsv(widget.list);
                 Navigator.of(context).pop();
