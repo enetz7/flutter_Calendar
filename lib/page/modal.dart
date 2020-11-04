@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:calendar/model/contenedor.dart';
 import 'package:calendar/api/apiConection.dart';
+import 'package:calendar/main.dart';
 
 class Modal extends StatefulWidget {
   Modal({Key key, this.contenedor, this.index, this.day, this.list})
@@ -144,6 +145,7 @@ class _Modal extends State<Modal> {
                           widget.contenedor.rowCount.toString();
                 });
                 ApiConection().createCsv(widget.list);
+                main();
                 Navigator.of(context).pop();
               },
             )
