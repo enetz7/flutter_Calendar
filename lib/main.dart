@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-
 import 'package:calendar/widget/calendarList.dart';
 
 void main() {
   runApp(MyApp());
 }
+
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Calendar',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.pink,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: MyHomePage(title: 'Calendar'),
@@ -35,10 +35,12 @@ class MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black45,
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text(widget.title,textAlign: TextAlign.center,),
       ),
-      body: SingleChildScrollView(child: CalendarList()),
+      body: SingleChildScrollView(child: CalendarList()
+      ),
     );
   }
 }
