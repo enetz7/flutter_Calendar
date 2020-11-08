@@ -135,7 +135,7 @@ class _Modal extends State<Modal> {
                 Container(
                     height: 54.0,
                     padding: EdgeInsets.all(12.0),
-                    child: Text('Introducir profesor de la asignatura',
+                    child: Text('Introducir profesor',
                         style: TextStyle(
                           fontSize: 20,
                         ))),
@@ -156,7 +156,7 @@ class _Modal extends State<Modal> {
                   children: [
                     Text("Selecciona el numero de horas",
                         style: TextStyle(
-                          fontSize: 18,
+                          fontSize: 16,
                         )),
                     if (widget.time == '10:45' || widget.time == '13:55') ...{
                       Padding(
@@ -189,7 +189,7 @@ class _Modal extends State<Modal> {
                       ),
                     } else ...{
                       Padding(
-                        padding: EdgeInsets.only(left: 50),
+                        padding: EdgeInsets.only(left: 30),
                         child: DropdownButton<String>(
                           value: dropdownValue,
                           dropdownColor: Theme.of(context).cardColor,
@@ -223,42 +223,44 @@ class _Modal extends State<Modal> {
                 ),
                 Row(children: [
                   Text(
-                    "Selecciona el color del container   ",
-                    style: TextStyle(fontSize: 18),
+                    "Selecciona color del contenedor",
+                    style: TextStyle(fontSize: 16),
                   ),
-                  RawMaterialButton(
-                      fillColor: pickerColor,
-                      padding: EdgeInsets.all(20),
-                      shape: CircleBorder(),
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          child: AlertDialog(
-                            title: const Text('Elige un color!'),
-                            content: SingleChildScrollView(
-                              child: ColorPicker(
-                                pickerColor: pickerColor,
-                                onColorChanged: changeColor,
-                                showLabel: true,
-                                pickerAreaHeightPercent: 0.8,
+                  Padding(
+                    padding: EdgeInsets.only(right: 20),
+                    child: RawMaterialButton(
+                        fillColor: pickerColor,
+                        shape: CircleBorder(),
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            child: AlertDialog(
+                              title: const Text('Elige un color!'),
+                              content: SingleChildScrollView(
+                                child: ColorPicker(
+                                  pickerColor: pickerColor,
+                                  onColorChanged: changeColor,
+                                  showLabel: true,
+                                  pickerAreaHeightPercent: 0.8,
+                                ),
                               ),
+                              actions: <Widget>[
+                                FlatButton(
+                                  child: const Text('Listo'),
+                                  onPressed: () {
+                                    setState(() => currentColor = pickerColor);
+                                    setState(() {
+                                      widget.contenedor.containerColor =
+                                          pickerColor;
+                                    });
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                              ],
                             ),
-                            actions: <Widget>[
-                              FlatButton(
-                                child: const Text('Listo'),
-                                onPressed: () {
-                                  setState(() => currentColor = pickerColor);
-                                  setState(() {
-                                    widget.contenedor.containerColor =
-                                        pickerColor;
-                                  });
-                                  Navigator.of(context).pop();
-                                },
-                              ),
-                            ],
-                          ),
-                        );
-                      }),
+                          );
+                        }),
+                  )
                 ]),
                 RaisedButton(
                   child: Text("Enviar"),
