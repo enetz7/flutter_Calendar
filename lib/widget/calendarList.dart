@@ -17,6 +17,8 @@ class CalendarListStage extends State<CalendarList> {
   Color currentColor = Color(0xff443a49);
   var listadias = ['', 'L', 'M', 'X', 'J', 'V'];
   var listadatos;
+  List listwrite = [];
+  var write = <int>[];
   List _listaContenedores = [];
   var contenedores = <Contenedor>[];
   List listaColumnas = <DoubleRow>[];
@@ -54,6 +56,7 @@ class CalendarListStage extends State<CalendarList> {
       for (int i = 0; i < index; i++) {
         staggeredTiles.add(const StaggeredTile.count(1, 1));
         contenedores = <Contenedor>[];
+        write = <int>[];
         for (int x = 0; x < 5; x++) {
           addContainer(i, x);
         }
@@ -77,7 +80,9 @@ class CalendarListStage extends State<CalendarList> {
       String color = datos[1];
       color = color.replaceAll("Color(", "");
       Color c = Color(int.parse(color.replaceAll(")", "")));
-      contenedores.add(Contenedor(c, datos[0], int.parse(datos[2])));
+      write.add(0);
+      contenedores.add(
+          Contenedor(c, datos[0], int.parse(datos[2]), datos[3], datos[4]));
       if (datos[2] == "2") {
         staggeredTiles.add(const StaggeredTile.count(1, 2));
         listaColumnas.add(DoubleRow(i + 1, x));
@@ -85,14 +90,19 @@ class CalendarListStage extends State<CalendarList> {
         staggeredTiles.add(const StaggeredTile.count(1, 1));
       }
     } else if (!contains) {
-      contenedores.add(Contenedor(Colors.purple[100], "", 1));
+      write.add(0);
+      contenedores.add(Contenedor(Theme.of(context).cardColor, "", 1, "", ""));
       staggeredTiles.add(const StaggeredTile.count(1, 1));
+    }
+    if (contains) {
+      write.add(1);
     }
     setState(() {});
   }
 
   void addContainerRow() {
     _listaContenedores.add(contenedores);
+    listwrite.add(write);
     setState(() {});
   }
 
@@ -116,15 +126,16 @@ class CalendarListStage extends State<CalendarList> {
                     padding: const EdgeInsets.symmetric(
                         vertical: 20, horizontal: 20),
                     decoration: BoxDecoration(
-                        color: Colors.black87,
-                        border: Border.all(color: Colors.black12)),
+                        color: Theme.of(context).backgroundColor,
+                        border: Border.all(
+                            color: Theme.of(context).backgroundColor)),
                     child: Column(
                       children: [
                         Text(
                           listadias[i],
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                              color: Colors.white,
+                              color: Theme.of(context).accentColor,
                               fontWeight: FontWeight.bold,
                               fontSize: 16),
                         ),
@@ -151,10 +162,12 @@ class CalendarListStage extends State<CalendarList> {
             child: new Padding(
                 padding: const EdgeInsets.symmetric(vertical: 250),
                 child: Column(children: [
-                  new CircularProgressIndicator(backgroundColor: Colors.pinkAccent,),
+                  new CircularProgressIndicator(
+                    backgroundColor: Colors.pinkAccent,
+                  ),
                   new Text(
                     "Loading",
-                    style: TextStyle(fontSize: 20,color: Colors.purpleAccent),
+                    style: TextStyle(fontSize: 20, color: Colors.pinkAccent),
                   ),
                 ]))),
       }
@@ -169,52 +182,186 @@ class CalendarListStage extends State<CalendarList> {
               padding: const EdgeInsets.only(left: 10),
               child: Align(
                   alignment: Alignment.topCenter,
-                  child: Text(listadatos[i]['H'],style: TextStyle(color: Colors.purpleAccent,
-                  fontSize: 20),)))
+                  child: Text(
+                    listadatos[i]['H'],
+                    style: TextStyle(
+                        color: Theme.of(context).accentColor, fontSize: 20),
+                  )))
         ]),
         if (i != listadatos.length - 1) ...{
-          if (listadatos[i]['H']=='11:40') ...{
+          if (listadatos[i]['H'] == '11:40') ...{
             for (var x = 0; x < _listaContenedores[i].length; x++) ...{
-              InkWell(
-                child: Container(
-                    decoration: BoxDecoration(
+              if (_listaContenedores[i][x].text == "") ...{
+                InkWell(
+                  child: Container(
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).cardColor,
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        _listaContenedores[i][x].text,
+                      )),
+                )
+              } else ...{
+                InkWell(
+                  child: Container(
+                      decoration: BoxDecoration(
                         color: _listaContenedores[i][x].containerColor,
-                    ),
-                    alignment: Alignment.center,
-                    child: Text(
-                      _listaContenedores[i][x].text,
-                    )),
-                
-              )
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        _listaContenedores[i][x].text,
+                      )),
+                )
+              }
             }
-            }else...{
-               for (var x = 0; x < _listaContenedores[i].length; x++) ...{
-              InkWell(
-                child: Container(
-                    decoration: BoxDecoration(
-                        color: _listaContenedores[i][x].containerColor,
-                        border: Border.all(color: Colors.black)),
-                    alignment: Alignment.center,
-                    child: Text(
-                      _listaContenedores[i][x].text,
-                    )),
-                onTap: () {
-                  Navigator.of(context).push(
-                    PageRouteBuilder(
-                      opaque: true,
-                      pageBuilder: (BuildContext context, _, __) {
-                        return Modal(
+          } else ...{
+            for (var x = 0; x < _listaContenedores[i].length; x++) ...{
+              if (_listaContenedores[i][x].text == "") ...{
+                InkWell(
+                  child: Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(5),
+                          color: Theme.of(context).cardColor,
+                          border:
+                              Border.all(color: Theme.of(context).canvasColor)),
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              _listaContenedores[i][x].text,
+                              style: TextStyle(
+                                color: Colors.white,
+                                shadows: <Shadow>[
+                                  Shadow(
+                                    offset: Offset(2.0, 2.0),
+                                    blurRadius: 3.0,
+                                    color: Color.fromARGB(255, 0, 0, 0),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Text(
+                              _listaContenedores[i][x].teacher,
+                              style: TextStyle(
+                                color: Colors.white,
+                                shadows: <Shadow>[
+                                  Shadow(
+                                    offset: Offset(2.0, 2.0),
+                                    blurRadius: 3.0,
+                                    color: Color.fromARGB(255, 0, 0, 0),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Text(
+                              _listaContenedores[i][x].numberClass,
+                              style: TextStyle(
+                                color: Colors.white,
+                                shadows: <Shadow>[
+                                  Shadow(
+                                    offset: Offset(1.0, 1.0),
+                                    blurRadius: 3.0,
+                                    color: Color.fromARGB(255, 0, 0, 0),
+                                  ),
+                                ],
+                              ),
+                            )
+                          ])),
+                  onTap: () {
+                    Navigator.of(context).push(
+                      PageRouteBuilder(
+                        opaque: true,
+                        pageBuilder: (BuildContext context, _, __) {
+                          return Modal(
                             contenedor: _listaContenedores[i][x],
                             index: i,
-                            day: listadias[x + 1],
-                            list: listadatos);
-                      },
-                    ),
-                  );
-                },
-              )
+                            index2: x,
+                            day: listadias,
+                            list: listadatos,
+                            time: listadatos[i]['H'],
+                            listwrite: listwrite,
+                            listcontainer: _listaContenedores[i],
+                          );
+                        },
+                      ),
+                    );
+                  },
+                )
+              } else ...{
+                InkWell(
+                  child: Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(5),
+                          color: _listaContenedores[i][x].containerColor,
+                          border:
+                              Border.all(color: Theme.of(context).canvasColor)),
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              _listaContenedores[i][x].text,
+                              style: TextStyle(
+                                color: Colors.white,
+                                shadows: <Shadow>[
+                                  Shadow(
+                                    offset: Offset(2.0, 2.0),
+                                    blurRadius: 3.0,
+                                    color: Color.fromARGB(255, 0, 0, 0),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Text(
+                              _listaContenedores[i][x].teacher,
+                              style: TextStyle(
+                                color: Colors.white,
+                                shadows: <Shadow>[
+                                  Shadow(
+                                    offset: Offset(2.0, 2.0),
+                                    blurRadius: 3.0,
+                                    color: Color.fromARGB(255, 0, 0, 0),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Text(
+                              _listaContenedores[i][x].numberClass,
+                              style: TextStyle(
+                                color: Colors.white,
+                                shadows: <Shadow>[
+                                  Shadow(
+                                    offset: Offset(1.0, 1.0),
+                                    blurRadius: 3.0,
+                                    color: Color.fromARGB(255, 0, 0, 0),
+                                  ),
+                                ],
+                              ),
+                            )
+                          ])),
+                  onTap: () {
+                    Navigator.of(context).push(
+                      PageRouteBuilder(
+                        opaque: true,
+                        pageBuilder: (BuildContext context, _, __) {
+                          return Modal(
+                            contenedor: _listaContenedores[i][x],
+                            index: i,
+                            index2: x,
+                            day: listadias,
+                            list: listadatos,
+                            time: listadatos[i]['H'],
+                            listwrite: listwrite,
+                            listcontainer: _listaContenedores[i],
+                          );
+                        },
+                      ),
+                    );
+                  },
+                )
+              }
             }
-            }
+          }
         }
       }
     ];

@@ -5,7 +5,6 @@ void main() {
   runApp(MyApp());
 }
 
-
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
@@ -13,9 +12,20 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Calendar',
       theme: ThemeData(
-        primarySwatch: Colors.pink,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
+          primarySwatch: Colors.pink,
+          accentColor: Colors.black,
+          cardColor: Colors.grey[200],
+          canvasColor: Colors.grey[300],
+          visualDensity: VisualDensity.adaptivePlatformDensity,
+          backgroundColor: Colors.white),
+      darkTheme: ThemeData(
+          brightness: Brightness.dark,
+          primaryColor: Colors.pink, // New
+          accentColor: Colors.grey[350],
+          cardColor: Colors.grey[900],
+          canvasColor: Colors.black,
+          backgroundColor: Colors.black // New
+          ),
       home: MyHomePage(title: 'Calendar'),
       debugShowCheckedModeBanner: false,
     );
@@ -35,12 +45,14 @@ class MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black45,
+      backgroundColor: Theme.of(context).backgroundColor,
       appBar: AppBar(
-        title: Text(widget.title,textAlign: TextAlign.center,),
+        title: Text(
+          widget.title,
+          textAlign: TextAlign.center,
+        ),
       ),
-      body: SingleChildScrollView(child: CalendarList()
-      ),
+      body: SingleChildScrollView(child: CalendarList()),
     );
   }
 }
