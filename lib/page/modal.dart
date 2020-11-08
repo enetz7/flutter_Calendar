@@ -64,13 +64,9 @@ class _Modal extends State<Modal> {
     contador = 0;
     for (int x = 0; x < widget.listcontainer.length; x++) {
       if (widget.listwrite[widget.index][x] == 1) {
-        print("contador");
         contador++;
         setState(() {});
       }
-      print("lista escribir " + widget.listwrite[widget.index][x].toString());
-      print("x " + x.toString());
-      print("index2 " + widget.index2.toString());
       if (widget.listwrite[widget.index][x] == 1 && widget.index2 == x) {
         widget.list[widget.index][widget.day[contador + x + 1]] =
             widget.contenedor.text +
