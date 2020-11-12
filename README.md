@@ -40,15 +40,15 @@ Application:
     DayMode:
       
       Calendar:
-      
+        <img src="https://github.com/enetz7/flutter_Calendar/tree/main/lib/images/CalendarDay.png"/>
       
       Modal:
-    
+        <img src="https://github.com/enetz7/flutter_Calendar/tree/main/lib/images/ModalDay.png"/>
     DarkMode:
     
       Calendar:
-      
+        <img src="https://github.com/enetz7/flutter_Calendar/tree/main/lib/images/CalendarDark.png"/>
       
       Modal:
-      
+        <img src="https://github.com/enetz7/flutter_Calendar/tree/main/lib/images/ModalDark.png"/>
     
