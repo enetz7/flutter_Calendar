@@ -39,13 +39,17 @@ Application:
 
 DayMode:
      
-<img src="https://github.com/enetz7/flutter_Calendar/blob/main/lib/images/CalendarDay.png" width="200" height="400"/>
+<img src="/lib/images/CalendarDay.png" width="200" height="400"/>
 
-<img src="https://github.com/enetz7/flutter_Calendar/tree/main/lib/images/ModalDay.png" width="200" height="400"/>
+
+<img src="/lib/images/ModalDay.png" width="200" height="400"/>
+
         
 DarkMode:
 
-<img src="https://github.com/enetz7/flutter_Calendar/tree/main/lib/images/CalendarDark.png" width="200" height="400"/>
 
-<img src="https://github.com/enetz7/flutter_Calendar/tree/main/lib/images/ModalDark.png" width="200" height="400"/>
+<img src="/lib/images/CalendarDark.png" width="200" height="400"/>
+
+
+<img src="/lib/images/ModalDark.png" width="200" height="400"/>
     
